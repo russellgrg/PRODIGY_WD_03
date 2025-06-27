@@ -9,105 +9,172 @@
 <body>
   <div class="game-wrapper">
     <h1 class="game-title">Tic-Tac-Toe</h1>
-    <div class="board" id="board">
-      <div class="cell" data-cell></div>
-      <div class="cell" data-cell></div>
-      <div class="cell" data-cell></div>
-      <div class="cell" data-cell></div>
-      <div class="cell" data-cell></div>
-      <div class="cell" data-cell></div>
-      <div class="cell" data-cell></div>
-      <div class="cell" data-cell></div>
-      <div class="cell" data-cell></div>
+
+    <!-- Mode Selection -->
+    <div id="mode-select">
+      <p>Select Mode:</p>
+      <button onclick="setMode('pvp')">Player vs Player</button>
+      <button onclick="setMode('pvai')">Player vs AI</button>
     </div>
-    <div id="status" class="status-text">X's Turn</div>
-    <button id="resetBtn" class="reset-btn">Reset Game</button>
+
+    <!-- Game Board -->
+    <div id="game-area" style="display: none;">
+      <div class="board" id="board">
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+        <div class="cell" data-cell></div>
+      </div>
+      <div id="status" class="status-text">Player X's Turn</div>
+      <button id="resetBtn" class="reset-btn">Reset Game</button>
+      <button id="backBtn" class="back-btn">Go Back</button>
+    </div>
   </div>
 
   <script>
     const board = document.getElementById("board");
-    const cells = document.querySelectorAll("[data-cell]");
-    const statusText = document.getElementById("status");
-    const resetButton = document.getElementById("resetBtn");
+const cells = document.querySelectorAll("[data-cell]");
+const statusText = document.getElementById("status");
+const resetButton = document.getElementById("resetBtn");
+const backButton = document.getElementById("backBtn");
+const modeSelect = document.getElementById("mode-select");
+const gameArea = document.getElementById("game-area");
 
-    let currentPlayer = "X";
-    let isGameActive = true;
+let currentPlayer = "X";
+let isGameActive = true;
+let mode = "pvp"; // default mode
 
-    const winningCombinations = [
-      [0,1,2], [3,4,5], [6,7,8], // rows
-      [0,3,6], [1,4,7], [2,5,8], // cols
-      [0,4,8], [2,4,6]           // diagonals
-    ];
+const winningCombinations = [
+  [0,1,2], [3,4,5], [6,7,8], // rows
+  [0,3,6], [1,4,7], [2,5,8], // columns
+  [0,4,8], [2,4,6]           // diagonals
+];
 
-    function startGame() {
-      currentPlayer = "X";
-      isGameActive = true;
-        statusText.textContent = `Player ${currentPlayer}'s Turn`;
-      cells.forEach(cell => {
-        cell.textContent = "";
-        cell.classList.remove("x", "o", "win");
-        cell.addEventListener("click", handleClick, { once: true });
-      });
-    }
+// Handle mode selection
+function setMode(selectedMode) {
+  mode = selectedMode;
+  modeSelect.style.display = "none";
+  gameArea.style.display = "block";
+  startGame();
+}
 
-    function handleClick(e) {
-      if (!isGameActive) return;
-      const cell = e.target;
-      cell.textContent = currentPlayer;
-      cell.classList.add(currentPlayer.toLowerCase());
+// Start or restart the game
+function startGame() {
+  currentPlayer = "X";
+  isGameActive = true;
+  statusText.textContent = `Player ${currentPlayer}'s Turn`;
+  cells.forEach(cell => {
+    cell.textContent = "";
+    cell.classList.remove("x", "o", "win");
+    cell.addEventListener("click", handleClick, { once: true });
+  });
+}
 
-      if (checkWin(currentPlayer)) {
-        endGame(false);
-      } else if (isDraw()) {
-        endGame(true);
-      } else {
-        swapPlayer();
-      }
-    }
+// Handle cell clicks
+function handleClick(e) {
+  if (!isGameActive) return;
+  const cell = e.target;
+  if (cell.textContent !== "") return;
 
-    function swapPlayer() {
-      currentPlayer = currentPlayer === "X" ? "O" : "X";
+  makeMove(cell, currentPlayer);
+
+  if (checkWin(currentPlayer)) {
+    endGame(false);
+    return;
+  } else if (isDraw()) {
+    endGame(true);
+    return;
+  }
+
+  if (mode === "pvai" && currentPlayer === "X") {
+    currentPlayer = "O";
     statusText.textContent = `Player ${currentPlayer}'s Turn`;
-    }
+    setTimeout(computerMove, 500); // small delay for realism
+  } else {
+    swapPlayer();
+  }
+}
 
-    function checkWin(player) {
-      return winningCombinations.some(comb => {
-        return comb.every(index =>
-          cells[index].textContent === player
-        );
+// Random move for AI
+function computerMove() {
+  if (!isGameActive) return;
+  const emptyCells = [...cells].filter(cell => cell.textContent === "");
+  const randomCell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+  if (randomCell) {
+    makeMove(randomCell, "O");
+
+    if (checkWin("O")) {
+      endGame(false);
+    } else if (isDraw()) {
+      endGame(true);
+    } else {
+      currentPlayer = "X";
+      statusText.textContent = `Player ${currentPlayer}'s Turn`;
+    }
+  }
+}
+
+// Apply the move to the board
+function makeMove(cell, player) {
+  cell.textContent = player;
+  cell.classList.add(player.toLowerCase());
+}
+
+// Switch current player
+function swapPlayer() {
+  currentPlayer = currentPlayer === "X" ? "O" : "X";
+  statusText.textContent = `Player ${currentPlayer}'s Turn`;
+}
+
+// Check for a win
+function checkWin(player) {
+  return winningCombinations.some(comb => {
+    return comb.every(index => cells[index].textContent === player);
+  });
+}
+
+// Check for draw
+function isDraw() {
+  return [...cells].every(cell =>
+    cell.textContent === "X" || cell.textContent === "O"
+  );
+}
+
+// End game
+function endGame(draw) {
+  isGameActive = false;
+  if (draw) {
+    statusText.textContent = "It's a Draw!";
+  } else {
+    statusText.textContent = `Player ${currentPlayer} Wins!`;
+    highlightWin(currentPlayer);
+  }
+}
+
+// Highlight winning cells
+function highlightWin(player) {
+  winningCombinations.forEach(comb => {
+    if (comb.every(index => cells[index].textContent === player)) {
+      comb.forEach(index => {
+        cells[index].classList.add("win");
       });
     }
+  });
+}
 
-    function isDraw() {
-      return [...cells].every(cell =>
-        cell.textContent === "X" || cell.textContent === "O"
-      );
-    }
+// Reset button
+resetButton.addEventListener("click", startGame);
 
-    function endGame(draw) {
-      isGameActive = false;
-      if (draw) {
-        statusText.textContent = "It's a Draw!";
-      } else {
-        statusText.textContent = `Player ${currentPlayer} Wins!`; 
-        highlightWin(currentPlayer);
-      }
-    }
-
-    function highlightWin(player) {
-      winningCombinations.forEach(comb => {
-        if (comb.every(index => cells[index].textContent === player)) {
-          comb.forEach(index => {
-            cells[index].classList.add("win");
-          });
-        }
-      });
-    }
-
-    resetButton.addEventListener("click", startGame);
-
-    // Start the game on load
-    startGame();
+// Go Back to mode selection
+backButton.addEventListener("click", () => {
+  gameArea.style.display = "none";
+  modeSelect.style.display = "block";
+});
   </script>
 </body>
 </html>
