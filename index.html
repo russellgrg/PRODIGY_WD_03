@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tic Tac Toe</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="game-wrapper">
+    <h1 class="game-title">Tic-Tac-Toe</h1>
+    <div class="board" id="board">
+      <div class="cell" data-cell></div>
+      <div class="cell" data-cell></div>
+      <div class="cell" data-cell></div>
+      <div class="cell" data-cell></div>
+      <div class="cell" data-cell></div>
+      <div class="cell" data-cell></div>
+      <div class="cell" data-cell></div>
+      <div class="cell" data-cell></div>
+      <div class="cell" data-cell></div>
+    </div>
+    <div id="status" class="status-text">X's Turn</div>
+    <button id="resetBtn" class="reset-btn">Reset Game</button>
+  </div>
+
+  <script>
+    const board = document.getElementById("board");
+    const cells = document.querySelectorAll("[data-cell]");
+    const statusText = document.getElementById("status");
+    const resetButton = document.getElementById("resetBtn");
+
+    let currentPlayer = "X";
+    let isGameActive = true;
+
+    const winningCombinations = [
+      [0,1,2], [3,4,5], [6,7,8], // rows
+      [0,3,6], [1,4,7], [2,5,8], // cols
+      [0,4,8], [2,4,6]           // diagonals
+    ];
+
+    function startGame() {
+      currentPlayer = "X";
+      isGameActive = true;
+        statusText.textContent = `Player ${currentPlayer}'s Turn`;
+      cells.forEach(cell => {
+        cell.textContent = "";
+        cell.classList.remove("x", "o", "win");
+        cell.addEventListener("click", handleClick, { once: true });
+      });
+    }
+
+    function handleClick(e) {
+      if (!isGameActive) return;
+      const cell = e.target;
+      cell.textContent = currentPlayer;
+      cell.classList.add(currentPlayer.toLowerCase());
+
+      if (checkWin(currentPlayer)) {
+        endGame(false);
+      } else if (isDraw()) {
+        endGame(true);
+      } else {
+        swapPlayer();
+      }
+    }
+
+    function swapPlayer() {
+      currentPlayer = currentPlayer === "X" ? "O" : "X";
+    statusText.textContent = `Player ${currentPlayer}'s Turn`;
+    }
+
+    function checkWin(player) {
+      return winningCombinations.some(comb => {
+        return comb.every(index =>
+          cells[index].textContent === player
+        );
+      });
+    }
+
+    function isDraw() {
+      return [...cells].every(cell =>
+        cell.textContent === "X" || cell.textContent === "O"
+      );
+    }
+
+    function endGame(draw) {
+      isGameActive = false;
+      if (draw) {
+        statusText.textContent = "It's a Draw!";
+      } else {
+        statusText.textContent = `Player ${currentPlayer} Wins!`; 
+        highlightWin(currentPlayer);
+      }
+    }
+
+    function highlightWin(player) {
+      winningCombinations.forEach(comb => {
+        if (comb.every(index => cells[index].textContent === player)) {
+          comb.forEach(index => {
+            cells[index].classList.add("win");
+          });
+        }
+      });
+    }
+
+    resetButton.addEventListener("click", startGame);
+
+    // Start the game on load
+    startGame();
+  </script>
+</body>
+</html>
