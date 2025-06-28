@@ -7,19 +7,27 @@ This is a responsive and interactive **Tic-Tac-Toe** game built using:
 - CSS
 - JavaScript
 
-Users can take turns playing as **Player X** and **Player O**, aiming to get three marks in a row to win.
+Players can choose to:
+- Play against another player (**PvP**)
+- Play against a basic AI opponent (**PvAI**)
 
 ---
 
 ## ✅ Features
 
-- 🧠 Classic 3×3 Tic-Tac-Toe Grid
-- 👆 Click-to-play turns for Player X and Player O
-- 🎉 Win and Draw detection
-- 🔁 "Restart Game" button
-- 🟩 Highlight for winning cells
-- 📱 Mobile responsive design
-- 🧼 Clean and user-friendly interface
+- 🧠 3×3 Tic-Tac-Toe Grid
+- 👤 Player vs Player (PvP)
+- 🤖 Player vs AI (PvAI – Random logic)
+- 🟩 Highlights winning cells
+- 🔁 Restart and 🔙 Mode switch buttons
+- 📱 Fully responsive UI
+- 🌐 Deployed online with GitHub Pages
+
+---
+
+## 🚀 Live Demo
+
+👉 [Click here to play now] https://russellgrg.github.io/PRODIGY_WD_03/
 
 ---
 
@@ -31,18 +39,19 @@ PRODIGY_WD_03/
 
 ---
 
-## 🔧 Technologies Used
+## 🧠 Technologies Used
 
 - HTML5
 - CSS3
-- Vanilla JavaScript (no frameworks)
+- Vanilla JavaScript (no libraries)
 
 ---
 
-## 📌 Submission Details
+## 📌 Submission Info
 
-This repository is part of the **Prodigy InfoTech Web Development Internship**.  
-It follows the required naming convention: PRODIGY_WD_03
+This repository is part of the **Web Development Internship** by Prodigy InfoTech.
+
+Repo name follows the required format:PRODIGY_WD_03
 
 ---
 
